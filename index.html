@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Semester I — Class Schedule</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap');
+
+  :root{
+    --paper:#F7F2E7;
+    --ink:#232323;
+    --ink-soft:#5B564C;
+    --rule:#D9D0BB;
+    --navy:#1F2A3C;
+
+    --c-ps:#33578F;    /* Probability & Statistics */
+    --c-ps-bg:#E4EAF3;
+    --c-ml:#1F8577;    /* Advance Machine Learning */
+    --c-ml-bg:#E1EFEC;
+    --c-fc:#7A4A87;    /* Foundations of Computer Systems */
+    --c-fc-bg:#EEE5F0;
+    --c-da:#B4740E;    /* Design and Analysis of Algorithms */
+    --c-da-bg:#F5EAD6;
+    --c-tw:#A2483C;    /* Technical Writing and Soft Skill */
+    --c-tw-bg:#F2E2DE;
+  }
+
+  *{ box-sizing:border-box; }
+
+  body{
+    margin:0;
+    background:#EDE7D8;
+    color:var(--ink);
+    font-family:'IBM Plex Sans', sans-serif;
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
+
+  .sheet{
+    max-width:1080px;
+    margin:32px auto;
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:44px 48px 40px;
+  }
+
+  header{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-end;
+    border-bottom:3px solid var(--navy);
+    padding-bottom:18px;
+    margin-bottom:26px;
+    gap:24px;
+  }
+
+  h1{
+    font-family:'Fraunces', serif;
+    font-size:34px;
+    font-weight:600;
+    margin:0 0 6px;
+    letter-spacing:0.2px;
+    color:var(--navy);
+  }
+
+  .sub{
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+
+  .term{
+    text-align:right;
+    font-size:13px;
+    color:var(--ink-soft);
+    line-height:1.6;
+  }
+  .term strong{ color:var(--ink); font-family:'IBM Plex Mono', monospace; font-weight:500; }
+
+  /* Legend */
+  .legend{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 22px;
+    margin-bottom:28px;
+  }
+  .legend .item{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .swatch{
+    width:11px; height:11px;
+    border-radius:2px;
+    flex-shrink:0;
+  }
+
+  /* Grid timetable */
+  .grid-wrap{
+    overflow-x:auto;
+    margin-bottom:38px;
+  }
+  .grid{
+    display:grid;
+    grid-template-columns: 58px repeat(7, 1fr);
+    min-width:820px;
+    border-top:1px solid var(--rule);
+    border-left:1px solid var(--rule);
+  }
+  .day-head{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    font-size:15px;
+    color:var(--navy);
+    text-align:center;
+    padding:10px 4px;
+    border-right:1px solid var(--rule);
+    border-bottom:2px solid var(--navy);
+    background:#EFE8D8;
+  }
+  .corner{
+    border-right:1px solid var(--rule);
+    border-bottom:2px solid var(--navy);
+    background:#EFE8D8;
+  }
+  .time-col{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px;
+    color:var(--ink-soft);
+    text-align:right;
+    padding-right:6px;
+    border-right:1px solid var(--rule);
+    border-bottom:1px dotted var(--rule);
+    position:relative;
+    top:-6px;
+  }
+  .cell{
+    border-right:1px solid var(--rule);
+    border-bottom:1px dotted var(--rule);
+  }
+  .block{
+    margin:2px 3px;
+    border-radius:5px;
+    padding:6px 8px 5px;
+    font-size:11.5px;
+    line-height:1.35;
+    color:var(--ink);
+    border-left:4px solid;
+    overflow:hidden;
+  }
+  .block .t{
+    font-weight:600;
+    display:block;
+  }
+  .block .tm{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9.5px;
+    color:var(--ink-soft);
+    display:block;
+    margin-top:2px;
+  }
+
+  .ps  { background:var(--c-ps-bg);  border-color:var(--c-ps); }
+  .ml  { background:var(--c-ml-bg);  border-color:var(--c-ml); }
+  .fc  { background:var(--c-fc-bg);  border-color:var(--c-fc); }
+  .da  { background:var(--c-da-bg);  border-color:var(--c-da); }
+  .tw  { background:var(--c-tw-bg);  border-color:var(--c-tw); }
+
+  /* Subject cards */
+  h2.section{
+    font-family:'Fraunces', serif;
+    font-size:19px;
+    font-weight:600;
+    color:var(--navy);
+    margin:0 0 14px;
+    padding-top:4px;
+    border-top:3px solid var(--navy);
+  }
+
+  .cards{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:16px;
+  }
+
+  .card{
+    border-left:5px solid;
+    background:#fff;
+    padding:16px 18px;
+    box-shadow:0 1px 2px rgba(0,0,0,0.04);
+  }
+  .card.ps{ border-color:var(--c-ps); }
+  .card.ml{ border-color:var(--c-ml); }
+  .card.fc{ border-color:var(--c-fc); }
+  .card.da{ border-color:var(--c-da); }
+  .card.tw{ border-color:var(--c-tw); }
+
+  .card h3{
+    font-family:'Fraunces', serif;
+    font-size:16px;
+    margin:0 0 2px;
+    color:var(--ink);
+  }
+  .card .code{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-bottom:2px;
+  }
+  .card .instr{
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+  .card .slot{
+    font-size:13px;
+    margin:6px 0 2px;
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:10px;
+  }
+  .card .slot .when{ font-weight:500; }
+  .card .slot a{
+    font-size:12px;
+    text-decoration:none;
+    color:#fff;
+    padding:3px 9px;
+    border-radius:20px;
+    white-space:nowrap;
+    font-weight:500;
+  }
+  .card.ps .slot a{ background:var(--c-ps); }
+  .card.ml .slot a{ background:var(--c-ml); }
+  .card.fc .slot a{ background:var(--c-fc); }
+  .card.da .slot a{ background:var(--c-da); }
+  .card.tw .slot a{ background:var(--c-tw); }
+
+  .card .rec{
+    margin-top:12px;
+    padding-top:10px;
+    border-top:1px dashed var(--rule);
+    font-size:12.5px;
+  }
+  .card .rec a{
+    color:var(--ink);
+    font-weight:500;
+  }
+
+  .note{
+    margin-top:30px;
+    font-size:12px;
+    color:var(--ink-soft);
+    border-top:1px solid var(--rule);
+    padding-top:14px;
+  }
+
+  /* Print styles */
+  @page{ size: A4 landscape; margin: 10mm; }
+  @media print{
+    body{ background:#fff; }
+    .sheet{ margin:0; border:none; padding:6mm; max-width:none; }
+    .card .slot a{
+      color:var(--ink) !important;
+      background:none !important;
+      padding:0;
+      border-radius:0;
+    }
+    .card .slot a::after{
+      content: " → " attr(href);
+      font-family:'IBM Plex Mono', monospace;
+      font-size:9px;
+      color:var(--ink-soft);
+      word-break:break-all;
+    }
+    .card .rec a::after{
+      content: " → " attr(href);
+      font-family:'IBM Plex Mono', monospace;
+      font-size:9px;
+      color:var(--ink-soft);
+      word-break:break-all;
+    }
+    .cards{ grid-template-columns: 1fr 1fr; }
+    .card{ box-shadow:none; break-inside:avoid; }
+    h2.section{ break-before: page; }
+    h2.section:first-of-type{ break-before: auto; }
+
+    /* Print only the timetable grid */
+    h2.section, .cards, .note{ display:none; }
+    .grid-wrap{ margin-bottom:0; }
+  }
+
+  @media (max-width:760px){
+    .sheet{ padding:24px 18px; }
+    header{ flex-direction:column; align-items:flex-start; }
+    .term{ text-align:left; }
+    .cards{ grid-template-columns:1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <header>
+    <div>
+      <h1>Semester I — Class Schedule</h1>
+      <div class="sub">M.Tech / MS · IIT Patna, Centre for Educational Technology</div>
+    </div>
+    <div class="term">
+      Classes run through<br><strong>30 November 2026</strong>
+    </div>
+  </header>
+
+  <div class="legend">
+    <div class="item"><span class="swatch" style="background:var(--c-ps)"></span>Probability &amp; Statistics</div>
+    <div class="item"><span class="swatch" style="background:var(--c-ml)"></span>Advance Machine Learning</div>
+    <div class="item"><span class="swatch" style="background:var(--c-fc)"></span>Foundations of Computer Systems</div>
+    <div class="item"><span class="swatch" style="background:var(--c-da)"></span>Design &amp; Analysis of Algorithms</div>
+    <div class="item"><span class="swatch" style="background:var(--c-tw)"></span>Technical Writing &amp; Soft Skill</div>
+  </div>
+
+  <div class="grid-wrap">
+    <div class="grid" style="grid-template-rows: auto repeat(27, 22px);">
+      <div class="corner"></div>
+      <div class="day-head">Mon</div>
+      <div class="day-head">Tue</div>
+      <div class="day-head">Wed</div>
+      <div class="day-head">Thu</div>
+      <div class="day-head">Fri</div>
+      <div class="day-head">Sat</div>
+      <div class="day-head">Sun</div>
+
+      <!-- Time column labels, row 2 = 8:00 start, each hour spans 2 rows -->
+      <div class="time-col" style="grid-row:2/4;">8:00</div>
+      <div class="time-col" style="grid-row:4/6;">9:00</div>
+      <div class="time-col" style="grid-row:6/8;">10:00</div>
+      <div class="time-col" style="grid-row:8/10;">11:00</div>
+      <div class="time-col" style="grid-row:10/12;">12:00</div>
+      <div class="time-col" style="grid-row:12/14;">13:00</div>
+      <div class="time-col" style="grid-row:14/16;">14:00</div>
+      <div class="time-col" style="grid-row:16/18;">15:00</div>
+      <div class="time-col" style="grid-row:18/20;">16:00</div>
+      <div class="time-col" style="grid-row:20/22;">17:00</div>
+      <div class="time-col" style="grid-row:22/24;">18:00</div>
+      <div class="time-col" style="grid-row:24/26;">19:00</div>
+      <div class="time-col" style="grid-row:26/28;">20:00</div>
+      <div class="time-col" style="grid-row:28/29;">21:00</div>
+
+      <!-- background cells so grid lines render for empty slots: 7 days x 27 rows -->
+      <!-- Monday column -->
+      <div class="cell" style="grid-column:2; grid-row:2/22;"></div>
+      <div class="block ps" style="grid-column:2; grid-row:22/26;">
+        <span class="t">Probability &amp; Statistics</span>
+        <span class="tm">6:00–8:00 PM</span>
+      </div>
+      <div class="cell" style="grid-column:2; grid-row:26/29;"></div>
+
+      <!-- Tuesday column -->
+      <div class="cell" style="grid-column:3; grid-row:2/20;"></div>
+      <div class="block tw" style="grid-column:3; grid-row:20/23;">
+        <span class="t">Technical Writing</span>
+        <span class="tm">5:00–6:30 PM</span>
+      </div>
+      <div class="block ml" style="grid-column:3; grid-row:23/26;">
+        <span class="t">Advance ML</span>
+        <span class="tm">6:30–8:00 PM</span>
+      </div>
+      <div class="cell" style="grid-column:3; grid-row:26/29;"></div>
+
+      <!-- Wednesday column -->
+      <div class="cell" style="grid-column:4; grid-row:2/20;"></div>
+      <div class="block tw" style="grid-column:4; grid-row:20/23;">
+        <span class="t">Technical Writing</span>
+        <span class="tm">5:00–6:30 PM</span>
+      </div>
+      <div class="cell" style="grid-column:4; grid-row:23/24;"></div>
+      <div class="block ps" style="grid-column:4; grid-row:24/27;">
+        <span class="t">Probability &amp; Statistics</span>
+        <span class="tm">7:00–8:30 PM</span>
+      </div>
+      <div class="cell" style="grid-column:4; grid-row:27/29;"></div>
+
+      <!-- Thursday column -->
+      <div class="cell" style="grid-column:5; grid-row:2/24;"></div>
+      <div class="block ps" style="grid-column:5; grid-row:24/27;">
+        <span class="t">Probability &amp; Statistics</span>
+        <span class="tm">7:00–8:30 PM</span>
+      </div>
+      <div class="cell" style="grid-column:5; grid-row:27/29;"></div>
+
+      <!-- Friday column: free -->
+      <div class="cell" style="grid-column:6; grid-row:2/29;"></div>
+
+      <!-- Saturday column -->
+      <div class="block da" style="grid-column:7; grid-row:2/4;">
+        <span class="t">DAA</span>
+        <span class="tm">8:00–9:30 AM</span>
+      </div>
+      <div class="block ml" style="grid-column:7; grid-row:4/7;">
+        <span class="t">Advance ML</span>
+        <span class="tm">9:30–11:00 AM</span>
+      </div>
+      <div class="cell" style="grid-column:7; grid-row:7/26;"></div>
+      <div class="block fc" style="grid-column:7; grid-row:26/29;">
+        <span class="t">Foundations of CS</span>
+        <span class="tm">7:30–9:30 PM</span>
+      </div>
+
+      <!-- Sunday column -->
+      <div class="block da" style="grid-column:8; grid-row:2/4;">
+        <span class="t">DAA</span>
+        <span class="tm">8:00–9:30 AM</span>
+      </div>
+      <div class="cell" style="grid-column:8; grid-row:4/8;"></div>
+      <div class="block da" style="grid-column:8; grid-row:8/11;">
+        <span class="t">DAA</span>
+        <span class="tm">11:00 AM–1:00 PM</span>
+      </div>
+      <div class="cell" style="grid-column:8; grid-row:11/14;"></div>
+      <div class="block fc" style="grid-column:8; grid-row:14/19;">
+        <span class="t">Foundations of CS</span>
+        <span class="tm">2:00–5:00 PM</span>
+      </div>
+      <div class="cell" style="grid-column:8; grid-row:19/29;"></div>
+    </div>
+  </div>
+
+  <h2 class="section">Class Links &amp; Recordings</h2>
+  <div class="cards">
+
+    <div class="card ps">
+      <h3>Probability and Statistics</h3>
+      <div class="code">EMC 5103</div>
+      <div class="instr">Dr. Anuj Singh</div>
+      <div class="slot"><span class="when">Monday · 6:00–8:00 PM</span>
+        <a href="https://teams.microsoft.com/meet/495302915846604?p=hmQEpqiBI2uSnbkNND" target="_blank">Join</a></div>
+      <div class="slot"><span class="when">Wed / Thu · 7:00–8:30 PM</span>
+        <a href="https://teams.microsoft.com/meet/479816469966136?p=x3vTS8Q3COOiL3uaoc" target="_blank">Join</a></div>
+      <div class="rec">🎥 <a href="https://cciitpatna-my.sharepoint.com/:f:/g/personal/emc5103_iitp_ac_in/IgCjmaSY3Ah1R76fBx8GLnz5Ac10KhVg3v28Neqc2cddZP0?e=D28CVF" target="_blank">View recordings</a></div>
+    </div>
+
+    <div class="card ml">
+      <h3>Advance Machine Learning</h3>
+      <div class="code">EAI 6103 / EAS 6103</div>
+      <div class="instr">Dr. Vivek Tiwari</div>
+      <div class="slot"><span class="when">Saturday · 9:30–11:00 AM</span>
+        <a href="https://teams.microsoft.com/meet/414755568209973?p=rWArPr1eqmbJAEQY9C" target="_blank">Join</a></div>
+      <div class="slot"><span class="when">Tuesday · 6:30–8:00 PM</span>
+        <a href="https://teams.microsoft.com/meet/417655912946994?p=2akmKtvzvvLw5iUzkG" target="_blank">Join</a></div>
+      <div class="rec">🎥 <a href="https://cciitpatna-my.sharepoint.com/:f:/g/personal/eais1e3_iitp_ac_in/IgBVZm3IGrfJT5UTG5-5LMQDAfpW8WbjirkhTpy7nd03Q0E?e=CORqCQ" target="_blank">View recordings</a></div>
+    </div>
+
+    <div class="card fc">
+      <h3>Foundations of Computer Systems</h3>
+      <div class="code">ECS 5102</div>
+      <div class="instr">Mr. Sundar Doraiswami</div>
+      <div class="slot"><span class="when">Sunday · 2:00–5:00 PM</span>
+        <a href="https://teams.microsoft.com/meet/45942092932647?p=qVjJ9lSZW9zq9hWW6S" target="_blank">Join</a></div>
+      <div class="slot"><span class="when">Saturday · 7:30–9:30 PM</span>
+        <a href="https://teams.microsoft.com/meet/493727404884042?p=3BzkFtM67hPGz730aW" target="_blank">Join</a></div>
+      <div class="rec">🎥 <a href="https://cciitpatna-my.sharepoint.com/:f:/g/personal/ecs5102_iitp_ac_in/IgDK4GbuoJf4RrRuIYJaGcezAZ1DQ8edJ3Q_UpEXwO59vhw?e=8u8eit" target="_blank">View recordings</a></div>
+    </div>
+
+    <div class="card da">
+      <h3>Design and Analysis of Algorithms</h3>
+      <div class="code">ECS 5101 / MCA20-303</div>
+      <div class="instr">Dr. Rahul Mishra</div>
+      <div class="slot"><span class="when">Sat / Sun · 8:00–9:30 AM</span>
+        <a href="https://teams.microsoft.com/meet/49556966249648?p=iaomzmLoL9QjBCW4As" target="_blank">Join</a></div>
+      <div class="slot"><span class="when">Sunday · 11:00 AM–1:00 PM</span>
+        <a href="https://teams.microsoft.com/meet/468638546281996?p=jfON6PpwYOBnIRp6Tf" target="_blank">Join</a></div>
+      <div class="rec">🎥 <a href="https://cciitpatna-my.sharepoint.com/:f:/g/personal/cs514cse_iitp_ac_in/IgC-FrMhG4NiQpuCSoX6ir57ARpCqEzd9kNmoOnvdeYNti0?e=KUyUz5" target="_blank">View recordings</a></div>
+    </div>
+
+    <div class="card tw">
+      <h3>Technical Writing and Soft Skill</h3>
+      <div class="code">EHS 5104</div>
+      <div class="instr">Dr. Sweta Sinha</div>
+      <div class="slot"><span class="when">Tue / Wed · 5:00–6:30 PM</span>
+        <a href="https://teams.microsoft.com/meet/428254824983011?p=b3APHhyFDPb17JVMfJ" target="_blank">Join</a></div>
+      <div class="rec">🎥 <a href="https://cciitpatna-my.sharepoint.com/:f:/g/personal/ehs5104_iitp_ac_in/IgCE212s5ipQT7T9Jh9M82sTATeJyRoCvitQUra7xX1msz4?e=FfIsgB" target="_blank">View recordings</a></div>
+    </div>
+
+  </div>
+
+  <div class="note">
+    Note: on Sunday, Design and Analysis of Algorithms runs in two separate blocks (8:00–9:30 AM and 11:00 AM–1:00 PM) — this is how the department scheduled it, not an error. Use your browser's Print (Ctrl/Cmd+P) to save this as a PDF; it's set up for A4 landscape.
+  </div>
+
+</div>
+</body>
+</html>
